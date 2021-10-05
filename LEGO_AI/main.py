@@ -25,7 +25,7 @@ mB.run_direct()
 #### PROGRAM LOOP ####
 while True:
 
-    print(cl.value())
+    # print(cl.value())
 
     line_follower(mA, mB, cl.value())
 
