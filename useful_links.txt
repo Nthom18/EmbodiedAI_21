@@ -1,0 +1,8 @@
+
+LEGO Documentation
+https://ev3dev-lang.readthedocs.io/projects/python-ev3dev/en/ev3dev-jessie/
+
+
+Connect to EV3 with SSH
+https://www.ev3dev.org/docs/tutorials/connecting-to-ev3dev-with-ssh/
+
