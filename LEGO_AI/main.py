@@ -12,8 +12,6 @@ btn = ev3.Button()
 # Colour sensor setup
 cl = ev3.ColorSensor('in1')
 cl.mode = 'COL-REFLECT'
-assert cl.connected, "LightSensorLeft(ColorSensor) is noot connected"
-# colors = ('unknown', 'black', 'blue', 'green', 'yellow', 'red', 'white', 'brown')
 
 # Motor Setup
 mA = ev3.LargeMotor('outA')
@@ -25,9 +23,10 @@ mB.run_direct()
 #### PROGRAM LOOP ####
 while True:
 
-    # print(cl.value())
+    mA.duty_cycle_sp = -50
+    mB.duty_cycle_sp = -50
 
-    line_follower(mA, mB, cl.value())
+    # line_follower(mA, mB, cl.value())
 
 
 
