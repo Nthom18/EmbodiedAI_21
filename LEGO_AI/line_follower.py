@@ -26,6 +26,8 @@ def line_follower(mA, mB, y):
         mA.duty_cycle_sp = BASE_SPEED
         mB.duty_cycle_sp = BASE_SPEED
 
+
+
 if __name__ == '__main__':
 
     # Colour sensor setup

@@ -23,8 +23,8 @@ mB.run_direct()
 #### PROGRAM LOOP ####
 while True:
 
-    mA.duty_cycle_sp = -50
-    mB.duty_cycle_sp = -50
+    mA.duty_cycle_sp = 50
+    mB.duty_cycle_sp = 50
 
     # line_follower(mA, mB, cl.value())
 
