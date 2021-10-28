@@ -75,6 +75,7 @@ class Behaviour:
 
             case 'ghost line':
                 self.wall_follow()
+                self.leap_of_faith()
 
             case _:        
                 pass
@@ -112,6 +113,9 @@ class Behaviour:
 
 
     def wall_follow(self):
+        pass
+
+    def leap_of_faith(self):
         pass
 
 
