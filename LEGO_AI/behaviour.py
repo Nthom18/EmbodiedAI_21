@@ -48,12 +48,25 @@ class Behaviour:
         match self.state:
             case 'init':
                 self.state = 'solid line'
-            
+
             case 'solid line':
                 if (cl1_state == WHITE and cl2_state == WHITE):
-                    self.state = 'ghost line'
+                    if ('wall' == True):
+                        self.state = 'wall'
+                    else:
+                        self.state = 'ghost line'
                 else:
                     self.state = 'solid line'
+
+            case 'wall':
+                if (cl1_state == BLACK or cl2_state == BLACK):
+                    self.state = 'solid line'
+
+                elif ('wall' == False):
+                    self.state = 'ghost line'
+
+                else:
+                    self.state = 'wall'
 
             case 'ghost line':
                 if (cl1_state == BLACK or cl2_state == BLACK):
@@ -69,13 +82,15 @@ class Behaviour:
         match self.state:
             case 'init':
                 pass
-            
+
             case 'solid line':
                 self.line_follow(cl_control)
 
             case 'ghost line':
-                self.wall_follow()
                 self.leap_of_faith()
+
+            case 'wall':
+                self.wall_follow()
 
             case _:        
                 pass
