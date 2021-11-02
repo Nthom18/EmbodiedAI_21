@@ -43,7 +43,8 @@ class Behaviour:
         cl1_state = BLACK if cl_control < REF_VALUE + 1 else WHITE
         cl2_state = BLACK if cl_check < REF_VALUE + 1 else WHITE
 
-
+        WALL = False    # Fro pseudo code
+        
         # STATE CHANGING
         match self.state:
             case 'init':
@@ -51,7 +52,7 @@ class Behaviour:
 
             case 'solid line':
                 if (cl1_state == WHITE and cl2_state == WHITE):
-                    if ('wall' == True):
+                    if (WALL == True):
                         self.state = 'wall'
                     else:
                         self.state = 'ghost line'
@@ -85,12 +86,15 @@ class Behaviour:
 
             case 'solid line':
                 self.line_follow(cl_control)
-
+                print("SOLID LINE")
+                
             case 'ghost line':
                 self.leap_of_faith()
+                print("GHOST LINE")
 
             case 'wall':
                 self.wall_follow()
+                print("WALL FOLLOW")
 
             case _:        
                 pass
@@ -107,10 +111,10 @@ class Behaviour:
         if (abs(right) > 100):
             right = np.sign(right) * 100
 
-        # self.motor_left.duty_cycle_sp = left
-        # self.motor_right.duty_cycle_sp = right
+        self.motor_left.duty_cycle_sp = left
+        self.motor_right.duty_cycle_sp = right
 
-        print(left, right)
+        # print(left, right)
 
 
     def line_follow(self, light_value):
