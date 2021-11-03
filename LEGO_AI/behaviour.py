@@ -60,7 +60,7 @@ class Behaviour:
                     self.state = 'solid line'
                 else:
                     self.state = 'ghost line'
-
+            # TODO Wall follower state and blind but no wall state.
             case _:        
                 self.state = 'init' # Default case
 
