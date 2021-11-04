@@ -15,58 +15,73 @@ BOARD_SIZE = 864
 
 class Robot():
 
-    def __init__(self, canvas):
+    def __init__(self, canvas, track):
         self.canvas = canvas
+        self.track = track
 
         self.init_flag = True
 
-        self.centre_pos = [BOARD_SIZE/2, BOARD_SIZE/2]
-        self.angle = 45
-        self.angle_velocity = 2
+        self.size = 100
+        self.position = [BOARD_SIZE/2, BOARD_SIZE/2]
+        self.angle = 0
+        self.angle_velocity = 0
 
-        null_vertices = [[0, 0],
-                        [0, 0],
-                        [0, 0],
-                        [0, 0]]
+        self.sensor_light = 0
 
 
+    def update(self, control_left, control_right):
 
-    def update(self):
-        
-        self.angle += self.angle_velocity
+        self.diff_drive(control_left, control_right)
+
+        sensor_pos = self.rotate_point(self.position[0] - 0.1*self.size, self.position[1] - self.size/2 - 10, self.angle)
+        sensor_reading = self.track.get(int(sensor_pos[0]), int(sensor_pos[1]))
+        self.sensor_light = sum(sensor_reading) / 3
+
+        self.makeDot(int(sensor_pos[0]), int(sensor_pos[1]))
+
         self.robot_structure()
+
+    
+    def diff_drive(self, ur, ul):
+        power_limit = 0.005
+
+        scale = self.size / 200
+        r = self.size - (50 * scale) / 2
+        L = self.size + 30 * scale
+
+        self.angle += ((ur - ul) * r / L) * power_limit
+        # self.position[0] += (ul + ur) * math.cos(self.angle) * r/2 * power_limit
+        # self.position[1] += (ul + ur) * math.sin(self.angle) * r/2 * power_limit
 
 
     def robot_structure(self):
-
-        centre_bot = [BOARD_SIZE/2, BOARD_SIZE/2]
         
         if (self.init_flag == True):
             
             self.init_flag = False
 
-            scale = 0.5
+            scale = self.size / 200
             size_bot = 200 * scale
             wheel_width = 30 * scale
             wheel_margin = 50 * scale
 
             self.main_points = [
-                    [centre_bot[0] - size_bot/2, centre_bot[1] - size_bot/2],
-                    [centre_bot[0] + size_bot/2, centre_bot[1] - size_bot/2],
-                    [centre_bot[0] + size_bot/2, centre_bot[1] + size_bot/2],
-                    [centre_bot[0] - size_bot/2, centre_bot[1] + size_bot/2]]
+                    [self.position[0] - size_bot/2, self.position[1] - size_bot/2],
+                    [self.position[0] + size_bot/2, self.position[1] - size_bot/2],
+                    [self.position[0] + size_bot/2, self.position[1] + size_bot/2],
+                    [self.position[0] - size_bot/2, self.position[1] + size_bot/2]]
 
             self.leftWhell_points = [
-                    [centre_bot[0] - size_bot/2 - wheel_width, centre_bot[1] - size_bot/2 + wheel_margin],
-                    [centre_bot[0] - size_bot/2, centre_bot[1] - size_bot/2 + wheel_margin],
-                    [centre_bot[0] - size_bot/2, centre_bot[1] + size_bot/2 - wheel_margin],
-                    [centre_bot[0] - size_bot/2 - wheel_width, centre_bot[1] + size_bot/2 - wheel_margin]]
+                    [self.position[0] - size_bot/2 - wheel_width, self.position[1] - size_bot/2 + wheel_margin],
+                    [self.position[0] - size_bot/2, self.position[1] - size_bot/2 + wheel_margin],
+                    [self.position[0] - size_bot/2, self.position[1] + size_bot/2 - wheel_margin],
+                    [self.position[0] - size_bot/2 - wheel_width, self.position[1] + size_bot/2 - wheel_margin]]
 
             self.rightWhell_points = [
-                    [centre_bot[0] + size_bot/2 + wheel_width, centre_bot[1] - size_bot/2 + wheel_margin],
-                    [centre_bot[0] + size_bot/2, centre_bot[1] - size_bot/2 + wheel_margin],
-                    [centre_bot[0] + size_bot/2, centre_bot[1] + size_bot/2 - wheel_margin],
-                    [centre_bot[0] + size_bot/2 + wheel_width, centre_bot[1] + size_bot/2 - wheel_margin]]
+                    [self.position[0] + size_bot/2 + wheel_width, self.position[1] - size_bot/2 + wheel_margin],
+                    [self.position[0] + size_bot/2, self.position[1] - size_bot/2 + wheel_margin],
+                    [self.position[0] + size_bot/2, self.position[1] + size_bot/2 - wheel_margin],
+                    [self.position[0] + size_bot/2 + wheel_width, self.position[1] + size_bot/2 - wheel_margin]]
 
         else:
 
@@ -75,9 +90,20 @@ class Robot():
             self.canvas.delete(self.wheel_right)
 
 
-        self.robot_main = self.rotate(self.main_points, self.angle, centre_bot, 'red')
-        self.wheel_left = self.rotate(self.leftWhell_points, self.angle, centre_bot, 'blue')
-        self.wheel_right = self.rotate(self.rightWhell_points, self.angle, centre_bot, 'blue')
+        self.robot_main = self.rotate(self.main_points, self.angle, self.position, 'red')
+        self.wheel_left = self.rotate(self.leftWhell_points, self.angle, self.position, 'blue')
+        self.wheel_right = self.rotate(self.rightWhell_points, self.angle, self.position, 'blue')
+
+
+    def makeDot(self, x, y):
+        if not self.init_flag:
+            self.canvas.delete(self.dot)
+
+        x0 = x - 5
+        y0 = y - 5
+        x1 = x + 5
+        y1 = y + 5
+        self.dot = self.canvas.create_oval(x0, y0, x1, y1, fill = 'green', outline = "")
 
 
     def rotate(self, points, angle, centre, colour):
@@ -97,3 +123,10 @@ class Robot():
             new_points.append([x_new + cx, y_new + cy])
 
         return self.canvas.create_polygon(new_points, fill=colour)
+
+
+    def rotate_point(self, x0, y0, angle):
+        angle = math.radians(angle)
+        x1 = math.cos(angle) * (x0 - self.position[0]) - math.sin(angle) * (y0 - self.position[1])
+        y1 = math.sin(angle) * (x0 - self.position[0]) + math.cos(angle) * (y0 - self.position[1])
+        return [x1 + self.position[0], y1 + self.position[1]]

@@ -9,7 +9,7 @@ import numpy as np
 import time
 import tkinter as tk
 
-# from behaviour import Behaviour
+from behaviour_COPY import Behaviour
 from robot_model import BOARD_SIZE, Robot
 
 
@@ -27,7 +27,8 @@ class Board(tk.Canvas):
         self.pack(side = tk.LEFT)
 
         # DRAW OBSTACLES (Circular obstacles x, y, r ; box obstacles x, y, w, h)
-        self.obstacleList_box = [[BOARD_SIZE/2, BOARD_SIZE/2, 50, BOARD_SIZE]]
+        # self.obstacleList_box = [[BOARD_SIZE/2, BOARD_SIZE/2, 50, BOARD_SIZE]]
+        self.obstacleList_box = []
         self.obstacleList_circle = []
 
         self.drawObstacles_circle() 
@@ -74,21 +75,26 @@ class Frame(tk.Frame,):
 
 def main():
 
-
     root = tk.Tk()
     root.resizable(width = False, height = False)
 
     canvas = Frame().board
 
-    bg_img = tk.PhotoImage(file = 'Tracks/smudge.png')
+    bg_img = tk.PhotoImage(file = 'Tracks/bw_vertical_blur.png')
     canvas.create_image(BOARD_SIZE/2, BOARD_SIZE/2, image=bg_img)
 
-    bot = Robot(canvas)
+    bot = Robot(canvas, bg_img)
+    control = Behaviour()
+
+
 
     # MAIN LOOP #####################################
     while True:
 
-        bot.update()
+        bot.update(control.thrust_left, control.thrust_right)
+        print(control.thrust_left, control.thrust_right)
+        control.update(bot.sensor_light, 0)
+        # print(bot.sensor_light)
 
 
         # Update GUI
