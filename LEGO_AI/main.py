@@ -24,18 +24,17 @@ mB = ev3.LargeMotor('outB')
 mB.run_direct()
 
 # Behavior setup
-Egon = Behaviour(mA, mB)
+Egon = Behaviour()
 
 #### PROGRAM LOOP ####
 while True:
 
+    # Apply behaviours
     Egon.update(cl1, cl2)
 
-    # mA.duty_cycle_sp = 50
-    # mB.duty_cycle_sp = 50
+    mA.duty_cycle_sp = Egon.thrust_left
+    mB.duty_cycle_sp = Egon.thrust_right
 
+
+    # First line follower
     # line_follower(mA, mB, cl.value())
-
-
-
-

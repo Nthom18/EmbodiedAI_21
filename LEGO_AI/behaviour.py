@@ -15,8 +15,8 @@ WHITE = 0
 BASE_SPEED = 25
 
 # Robot Measurements
-R = 2
-L = 10
+ROBOT_R = 55.72 / 2
+ROBOT_L = 117.16 + 22.76
 
 
 integral = 0
@@ -24,12 +24,15 @@ last_error = 0
 
 
 class Behaviour:
-    def __init__(self, mA, mB):
+    def __init__(self):
 
         self.state = 'init'
         
-        self.motor_left = mA
-        self.motor_right = mB
+        # self.motor_left = mA
+        # self.motor_right = mB
+
+        self.thrust_left = 0
+        self.thrust_right = 0
 
         # PID inits
         self.integral = 0
@@ -40,24 +43,27 @@ class Behaviour:
 
         # print(self.state)
         
-        cl1_state = BLACK if cl_control < REF_VALUE + 1 else WHITE
-        cl2_state = BLACK if cl_check < REF_VALUE + 1 else WHITE
+        control_state = BLACK if cl_control < REF_VALUE + 1 else WHITE
+        check_state = BLACK if cl_check < REF_VALUE + 1 else WHITE
 
 
         # STATE CHANGING
         if (self.state == 'init'):
-            self.state = 'solid line'
+            if (control_state == BLACK or check_state == BLACK):
+                self.state = 'solid line'
+            else:
+                self.state = 'ghost line'
 
 
         elif (self.state == 'solid line'):
-            if (cl1_state == WHITE and cl2_state == WHITE):
+            if (control_state == WHITE and check_state == WHITE):
                 self.state = 'ghost line'
             else:
                 self.state = 'solid line'
 
 
         elif (self.state == 'ghost line'):
-            if (cl1_state == BLACK or cl2_state == BLACK):
+            if (control_state == BLACK or check_state == BLACK):
                 self.state = 'solid line'
             else:
                 self.state = 'ghost line'
@@ -86,21 +92,22 @@ class Behaviour:
             pass
 
 
-    def diff_drive(self, angle_v):
-        diff = angle_v * L/R
+    def diff_drive(self, angle_velocity):
+        diff = angle_velocity * ROBOT_L/ROBOT_R
         
         left = BASE_SPEED - diff / 2
         right = BASE_SPEED + diff / 2
 
+        # PWM is percent -> max 100
         if (abs(left) > 100):
             left = np.sign(left) * 100
         if (abs(right) > 100):
             right = np.sign(right) * 100
 
-        self.motor_left.duty_cycle_sp = left
-        self.motor_right.duty_cycle_sp = right
+        self.thrust_left = left
+        self.thrust_right = right
 
-        # print(left, right)
+        print(left, right)
 
 
     def line_follow(self, light_value):
@@ -118,8 +125,8 @@ class Behaviour:
 
 
     def leap_of_faith(self):
-        self.motor_left.duty_cycle_sp   = BASE_SPEED
-        self.motor_right.duty_cycle_sp  = BASE_SPEED
+        self.thrust_left    = BASE_SPEED
+        self.thrust_right   = BASE_SPEED
 
 
 
@@ -140,16 +147,16 @@ class Behaviour:
 
 if __name__ == '__main__':
 
-    Robot = Behaviour(1, 1)
+    Robot = Behaviour()
 
-    Robot.update(50, 0)
-    Robot.update(45, 0)
-    Robot.update(40, 0)
-    Robot.update(35, 0)
-    Robot.update(30, 0)
-    Robot.update(25, 0)
-    Robot.update(30, 0)
-    Robot.update(35, 0)
-    Robot.update(35, 0)
-    Robot.update(35, 0)
+    Robot.update(50, 40)
+    Robot.update(45, 36)
+    Robot.update(40, 30)
+    Robot.update(35, 25)
+    Robot.update(30, 20)
+    Robot.update(25, 15)
+    Robot.update(30, 20)
+    Robot.update(35, 25)
+    Robot.update(35, 25)
+    Robot.update(35, 25)
 
