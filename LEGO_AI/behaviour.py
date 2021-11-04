@@ -43,61 +43,47 @@ class Behaviour:
         cl1_state = BLACK if cl_control < REF_VALUE + 1 else WHITE
         cl2_state = BLACK if cl_check < REF_VALUE + 1 else WHITE
 
-        WALL = False    # Fro pseudo code
-        
+
         # STATE CHANGING
-        match self.state:
-            case 'init':
+        if (self.state == 'init'):
+            self.state = 'solid line'
+
+
+        elif (self.state == 'solid line'):
+            if (cl1_state == WHITE and cl2_state == WHITE):
+                self.state = 'ghost line'
+            else:
                 self.state = 'solid line'
 
-            case 'solid line':
-                if (cl1_state == WHITE and cl2_state == WHITE):
-                    if (WALL == True):
-                        self.state = 'wall'
-                    else:
-                        self.state = 'ghost line'
-                else:
-                    self.state = 'solid line'
 
-            case 'wall':
-                if (cl1_state == BLACK or cl2_state == BLACK):
-                    self.state = 'solid line'
-
-                elif ('wall' == False):
-                    self.state = 'ghost line'
-
-                else:
-                    self.state = 'wall'
-
-            case 'ghost line':
-                if (cl1_state == BLACK or cl2_state == BLACK):
-                    self.state = 'solid line'
-                else:
-                    self.state = 'ghost line'
-            # TODO Wall follower state and blind but no wall state.
-            case _:        
-                self.state = 'init' # Default case
+        elif (self.state == 'ghost line'):
+            if (cl1_state == BLACK or cl2_state == BLACK):
+                self.state = 'solid line'
+            else:
+                self.state = 'ghost line'
 
 
-        # STATE ACTIONS TODO: Call behaviours
-        match self.state:
-            case 'init':
-                pass
+        else:      
+            self.state = 'init' # Default case
 
-            case 'solid line':
-                self.line_follow(cl_control)
-                print("SOLID LINE")
-                
-            case 'ghost line':
-                self.leap_of_faith()
-                print("GHOST LINE")
 
-            case 'wall':
-                self.wall_follow()
-                print("WALL FOLLOW")
+        # STATE ACTIONS
+        if (self.state == 'init'):
+            pass
 
-            case _:        
-                pass
+
+        elif (self.state == 'solid line'):
+            self.line_follow(cl_control)
+            print("SOLID LINE")
+
+
+        elif (self.state == 'ghost line'):
+            self.leap_of_faith()
+            print("GHOST LINE")
+
+
+        else:      
+            pass
 
 
     def diff_drive(self, angle_v):
@@ -131,11 +117,9 @@ class Behaviour:
         self.diff_drive(control_input)
 
 
-    def wall_follow(self):
-        pass
-
     def leap_of_faith(self):
-        pass
+        self.motor_left.duty_cycle_sp   = BASE_SPEED
+        self.motor_right.duty_cycle_sp  = BASE_SPEED
 
 
 
@@ -143,7 +127,7 @@ class Behaviour:
     # TODO - Find can
         # Implement integrator wind-up
         # Ghost line folowing 
-        # Wall following
+        # Keep track of last sensor to see black, to know if we're off track or the line has stopped.
 
     # TODO - Get can
         # Locate can
