@@ -2,7 +2,7 @@
 Model of differential drive robot to draw in simulation
 
 Author: Nicoline Louise Thomsen
-Last update: 04-11-21
+Last update: 06-11-21
 '''
 
 import math
@@ -33,13 +33,11 @@ class Robot():
 
         self.diff_drive(control_left, control_right)
 
-        sensor_pos = self.rotate_point(self.position[0] - 0.1*self.size, self.position[1] - self.size/2 - 10, self.angle)
-        sensor_reading = self.track.get(int(sensor_pos[0]), int(sensor_pos[1]))
-        self.sensor_light = sum(sensor_reading) / 3
-
-        self.makeDot(int(sensor_pos[0]), int(sensor_pos[1]))
-
         self.robot_structure()
+
+
+        sensor_reading = self.track.get(int(self.sensor_pos[0]), int(self.sensor_pos[1]))
+        self.sensor_light = sum(sensor_reading) / 3
 
     
     def diff_drive(self, ur, ul):
@@ -50,63 +48,62 @@ class Robot():
         L = self.size + 30 * scale
 
         self.angle += ((ur - ul) * r / L) * power_limit
+
         # self.position[0] += (ul + ur) * math.cos(self.angle) * r/2 * power_limit
         # self.position[1] += (ul + ur) * math.sin(self.angle) * r/2 * power_limit
+        # self.position[1] -= 0.1
 
 
     def robot_structure(self):
         
         if (self.init_flag == True):
-            
             self.init_flag = False
 
-            scale = self.size / 200
-            size_bot = 200 * scale
-            wheel_width = 30 * scale
-            wheel_margin = 50 * scale
-
-            self.main_points = [
-                    [self.position[0] - size_bot/2, self.position[1] - size_bot/2],
-                    [self.position[0] + size_bot/2, self.position[1] - size_bot/2],
-                    [self.position[0] + size_bot/2, self.position[1] + size_bot/2],
-                    [self.position[0] - size_bot/2, self.position[1] + size_bot/2]]
-
-            self.leftWhell_points = [
-                    [self.position[0] - size_bot/2 - wheel_width, self.position[1] - size_bot/2 + wheel_margin],
-                    [self.position[0] - size_bot/2, self.position[1] - size_bot/2 + wheel_margin],
-                    [self.position[0] - size_bot/2, self.position[1] + size_bot/2 - wheel_margin],
-                    [self.position[0] - size_bot/2 - wheel_width, self.position[1] + size_bot/2 - wheel_margin]]
-
-            self.rightWhell_points = [
-                    [self.position[0] + size_bot/2 + wheel_width, self.position[1] - size_bot/2 + wheel_margin],
-                    [self.position[0] + size_bot/2, self.position[1] - size_bot/2 + wheel_margin],
-                    [self.position[0] + size_bot/2, self.position[1] + size_bot/2 - wheel_margin],
-                    [self.position[0] + size_bot/2 + wheel_width, self.position[1] + size_bot/2 - wheel_margin]]
-
         else:
-
-            self.canvas.delete(self.robot_main)
-            self.canvas.delete(self.wheel_left)
-            self.canvas.delete(self.wheel_right)
-
-
-        self.robot_main = self.rotate(self.main_points, self.angle, self.position, 'red')
-        self.wheel_left = self.rotate(self.leftWhell_points, self.angle, self.position, 'blue')
-        self.wheel_right = self.rotate(self.rightWhell_points, self.angle, self.position, 'blue')
+            self.canvas.delete(self.robot_main_visual)
+            self.canvas.delete(self.wheel_left_visual)
+            self.canvas.delete(self.wheel_right_visual)
+            self.canvas.delete(self.sensor_visual)
 
 
-    def makeDot(self, x, y):
-        if not self.init_flag:
-            self.canvas.delete(self.dot)
-
-        x0 = x - 5
-        y0 = y - 5
-        x1 = x + 5
-        y1 = y + 5
-        self.dot = self.canvas.create_oval(x0, y0, x1, y1, fill = 'green', outline = "")
+        scale = self.size / 200
+        size_bot = 200 * scale
+        wheel_width = 30 * scale
+        wheel_margin = 50 * scale
+        sensor_offset = [-0.1*self.size, -self.size/2 - 10]
 
 
-    def rotate(self, points, angle, centre, colour):
+        # Translation
+        main_points = [
+                [self.position[0] - size_bot/2, self.position[1] - size_bot/2],
+                [self.position[0] + size_bot/2, self.position[1] - size_bot/2],
+                [self.position[0] + size_bot/2, self.position[1] + size_bot/2],
+                [self.position[0] - size_bot/2, self.position[1] + size_bot/2]]
+
+        leftWhell_points = [
+                [self.position[0] - size_bot/2 - wheel_width, self.position[1] - size_bot/2 + wheel_margin],
+                [self.position[0] - size_bot/2, self.position[1] - size_bot/2 + wheel_margin],
+                [self.position[0] - size_bot/2, self.position[1] + size_bot/2 - wheel_margin],
+                [self.position[0] - size_bot/2 - wheel_width, self.position[1] + size_bot/2 - wheel_margin]]
+
+        rightWhell_points = [
+                [self.position[0] + size_bot/2 + wheel_width, self.position[1] - size_bot/2 + wheel_margin],
+                [self.position[0] + size_bot/2, self.position[1] - size_bot/2 + wheel_margin],
+                [self.position[0] + size_bot/2, self.position[1] + size_bot/2 - wheel_margin],
+                [self.position[0] + size_bot/2 + wheel_width, self.position[1] + size_bot/2 - wheel_margin]]
+
+        self.sensor_point = [self.position[0] + sensor_offset[0], self.position[1] + sensor_offset[1]]
+
+
+        # Rotation
+        self.robot_main_visual = self.rotate_polygon(main_points, self.angle, self.position, 'red')
+        self.wheel_left_visual = self.rotate_polygon(leftWhell_points, self.angle, self.position, 'blue')
+        self.wheel_right_visual = self.rotate_polygon(rightWhell_points, self.angle, self.position, 'blue')
+        
+        self.sensor_pos, self.sensor_visual = self.rotate_point(self.sensor_point, self.angle, 'green')
+
+
+    def rotate_polygon(self, points, angle, centre, colour):
         # Code from: https://stackoverflow.com/questions/36620766/rotating-a-square-on-tkinter-canvas
 
         angle = math.radians(angle)
@@ -125,8 +122,25 @@ class Robot():
         return self.canvas.create_polygon(new_points, fill=colour)
 
 
-    def rotate_point(self, x0, y0, angle):
+    def rotate_point(self, points, angle, colour):
         angle = math.radians(angle)
-        x1 = math.cos(angle) * (x0 - self.position[0]) - math.sin(angle) * (y0 - self.position[1])
-        y1 = math.sin(angle) * (x0 - self.position[0]) + math.cos(angle) * (y0 - self.position[1])
-        return [x1 + self.position[0], y1 + self.position[1]]
+        
+        x1 = math.cos(angle) * (points[0] - self.position[0]) - math.sin(angle) * (points[1] - self.position[1])
+        y1 = math.sin(angle) * (points[0] - self.position[0]) + math.cos(angle) * (points[1] - self.position[1])
+
+        new_pos = [x1 + self.position[0], y1 + self.position[1]]
+
+        return new_pos, self.makeDot(new_pos, colour)
+
+
+    def makeDot(self, centre, colour):
+
+        x = int(centre[0])
+        y = int(centre[1])
+
+        x0 = x - 5
+        y0 = y - 5
+        x1 = x + 5
+        y1 = y + 5
+        
+        return self.canvas.create_oval(x0, y0, x1, y1, fill = colour, outline = "")

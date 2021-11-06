@@ -2,7 +2,7 @@
 Simple simulation of differential drive line-following robot.
 
 Author: Nicoline Louise Thomsen
-Last update: 04-11-21
+Last update: 06-11-21
 '''
 
 import numpy as np
