@@ -10,19 +10,16 @@ import numpy as np
 import tkinter as tk
 
 
-BOARD_SIZE = 864
-
-
 class Robot():
 
-    def __init__(self, canvas, track):
+    def __init__(self, canvas, track, start_pos, size):
         self.canvas = canvas
         self.track = track
 
         self.init_flag = True
 
-        self.size = 100
-        self.position = [BOARD_SIZE/2, BOARD_SIZE/2]
+        self.size = size
+        self.position = start_pos
         self.angle = 0
         self.angle_velocity = 0
 
@@ -49,8 +46,8 @@ class Robot():
 
         self.angle += ((ur - ul) * r / L) * power_limit
 
-        # self.position[0] += (ul + ur) * math.cos(self.angle) * r/2 * power_limit
-        # self.position[1] += (ul + ur) * math.sin(self.angle) * r/2 * power_limit
+        self.position[0] += (ul + ur) * math.cos(self.angle) * r/2 * power_limit / 10
+        self.position[1] += (ul + ur) * math.sin(self.angle) * r/2 * power_limit / 10
         # self.position[1] -= 0.1
 
 

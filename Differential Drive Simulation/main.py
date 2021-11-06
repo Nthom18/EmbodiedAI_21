@@ -10,24 +10,21 @@ import time
 import tkinter as tk
 
 from behaviour_COPY import Behaviour
-from robot_model import BOARD_SIZE, Robot
+from robot_model import Robot
 
 
 class Board(tk.Canvas):
 
-    def __init__(self):
+    def __init__(self, board_witdh, board_height):
 
-        BOARD_SIZE = 864
-
-        super().__init__(width=BOARD_SIZE, height=BOARD_SIZE,
+        super().__init__(width=board_witdh, height=board_height,
             background="gray99", highlightthickness=0)
 
         self.pack_propagate(0) #Don't allow the widgets inside to determine the frame's width / height
 
         self.pack(side = tk.LEFT)
 
-        # DRAW OBSTACLES (Circular obstacles x, y, r ; box obstacles x, y, w, h)
-        # self.obstacleList_box = [[BOARD_SIZE/2, BOARD_SIZE/2, 50, BOARD_SIZE]]
+        # DRAW OBSTACLES (Circular obstacles x, y, r - box obstacles x, y, w, h)
         self.obstacleList_box = []
         self.obstacleList_circle = []
 
@@ -59,11 +56,11 @@ class Board(tk.Canvas):
 
 class Frame(tk.Frame,):
 
-    def __init__(self):
+    def __init__(self, board_witdh, board_height):
         super().__init__()
 
         self.master.title('Differential Drive Simulation')
-        self.board = Board()
+        self.board = Board(board_witdh, board_height)
 
         # background_image=tk.PhotoImage('Tracks/smudge.png')
         # background_label = tk.Label(self.board, image=background_image)
@@ -78,12 +75,14 @@ def main():
     root = tk.Tk()
     root.resizable(width = False, height = False)
 
-    canvas = Frame().board
+    bg_img = tk.PhotoImage(file = 'Tracks/AI_track.png')
+    board_witdh, board_height = bg_img.width(), bg_img.height()
+    canvas = Frame(board_witdh, board_height).board
+    canvas.create_image(board_witdh/2, board_height/2, image=bg_img)
 
-    bg_img = tk.PhotoImage(file = 'Tracks/bw_vertical_blur.png')
-    canvas.create_image(BOARD_SIZE/2, BOARD_SIZE/2, image=bg_img)
+    start_pos = [50, 400]
 
-    bot = Robot(canvas, bg_img)
+    bot = Robot(canvas, bg_img, start_pos, size = 50)
     control = Behaviour()
 
 
@@ -92,7 +91,7 @@ def main():
     while True:
 
         bot.update(control.thrust_left, control.thrust_right)
-        print(control.thrust_left, control.thrust_right)
+        # print(control.thrust_left, control.thrust_right)
         control.update(bot.sensor_light, 0)
         # print(bot.sensor_light)
 
