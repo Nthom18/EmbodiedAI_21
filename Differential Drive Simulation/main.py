@@ -80,7 +80,7 @@ def main():
     canvas = Frame(board_witdh, board_height).board
     canvas.create_image(board_witdh/2, board_height/2, image=bg_img)
 
-    start_pos = [50, 400]
+    start_pos = [100, board_height/3]
 
     bot = Robot(canvas, bg_img, start_pos, size = 50)
     control = Behaviour()

@@ -113,7 +113,7 @@ class Behaviour:
 
     def line_follow(self, light_value):
 
-        Kp, Ki, Kd = (1, 0, 0.5)
+        Kp, Ki, Kd = (1, 0.5, 0.5)
 
         error = REF_VALUE - light_value
         self.integral += error
