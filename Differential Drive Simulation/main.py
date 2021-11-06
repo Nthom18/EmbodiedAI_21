@@ -87,9 +87,9 @@ def main():
     while True:
 
         # Control and draw robot
-        control.update(bot.sensor_light_left, bot.sensor_light_right)
+        # control.update(bot.sensor_light_left, bot.sensor_light_right)
+        control.update(bot.sensor_light_left, 0)
         bot.update(control.thrust_left, control.thrust_right)
-        # control.update(bot.sensor_light_left, 0)
 
 
         # Update GUI
