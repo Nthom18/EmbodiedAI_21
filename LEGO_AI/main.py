@@ -36,5 +36,4 @@ while True:
     mB.duty_cycle_sp = Egon.thrust_right
 
 
-    # First line follower
-    # line_follower(mA, mB, cl.value())
+    # line_follower(mA, mB, cl.value())     # First line follower

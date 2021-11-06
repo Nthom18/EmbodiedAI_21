@@ -62,10 +62,6 @@ class Frame(tk.Frame,):
         self.master.title('Differential Drive Simulation')
         self.board = Board(board_witdh, board_height)
 
-        # background_image=tk.PhotoImage('Tracks/smudge.png')
-        # background_label = tk.Label(self.board, image=background_image)
-        # background_label.place(x=0, y=0, relwidth=1, relheight=1)
-
         self.pack()
 
 
@@ -80,18 +76,19 @@ def main():
     canvas = Frame(board_witdh, board_height).board
     canvas.create_image(board_witdh/2, board_height/2, image=bg_img)
 
+
     start_pos = [100, board_height/3]
 
     bot = Robot(canvas, bg_img, start_pos, size = 50)
     control = Behaviour()
 
 
-
     # MAIN LOOP #####################################
     while True:
 
-        bot.update(control.thrust_left, control.thrust_right)
+        # Control and draw robot
         control.update(bot.sensor_light_left, bot.sensor_light_right)
+        bot.update(control.thrust_left, control.thrust_right)
         # control.update(bot.sensor_light_left, 0)
 
 

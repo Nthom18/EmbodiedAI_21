@@ -18,7 +18,7 @@ class Robot():
 
         self.size = size
         self.position = start_pos
-        self.angle = math.radians(-90)
+        self.angle = math.radians(-90)  # Positive -> clockwise
 
         self.sensor_light_left = 0
         self.sensor_light_right = 0
@@ -50,8 +50,8 @@ class Robot():
         r = self.size - (50 * scale) * 2
         L = self.size + 30 * scale
 
+        # Differential drive equations
         self.angle += ((ul - ur) * r / L)
-
         self.position[0] += (ul + ur) * math.cos(self.angle) * r/2
         self.position[1] += (ul + ur) * math.sin(self.angle) * r/2
 
@@ -61,7 +61,7 @@ class Robot():
         if (self.init_flag == True):
             self.init_flag = False
 
-        else:
+        else:   # Delete assets on canvas to redraw them in new positions
             self.canvas.delete(self.robot_main_visual)
             self.canvas.delete(self.wheel_left_visual)
             self.canvas.delete(self.wheel_right_visual)
