@@ -6,8 +6,6 @@ Last update: 06-11-21
 '''
 
 import math
-import numpy as np
-import tkinter as tk
 
 
 class Robot():
@@ -28,18 +26,17 @@ class Robot():
 
     def update(self, control_left, control_right):
 
-
-
         self.diff_drive(control_left, control_right)
-        # self.diff_drive(0, 0)
-
         self.robot_structure()
 
-
-        sensor_reading_left = self.track.get(int(self.sensor_pos_left[0]), int(self.sensor_pos_left[1]))
+        try:    # Check if out of bounds
+            sensor_reading_left = self.track.get(int(self.sensor_pos_left[0]), int(self.sensor_pos_left[1]))
+            sensor_reading_right = self.track.get(int(self.sensor_pos_right[0]), int(self.sensor_pos_right[1]))
+        except:
+            sensor_reading_left  = [255, 255, 255]
+            sensor_reading_right = [255, 255, 255]
+    
         self.sensor_light_left = sum(sensor_reading_left) / 3
-
-        sensor_reading_right = self.track.get(int(self.sensor_pos_right[0]), int(self.sensor_pos_right[1]))
         self.sensor_light_right = sum(sensor_reading_right) / 3
 
 
@@ -76,32 +73,10 @@ class Robot():
         size_bot = 200 * scale
         wheel_width = 30 * scale
         wheel_margin = 50 * scale
-        sensor_offset = [self.size/2 + 10, 0.1*self.size, ]
+        sensor_offset = [self.size/2 + 10, 0.2*self.size, ]
 
 
-        # # Translation
-        # main_points = [
-        #         [self.position[0] - size_bot/2, self.position[1] - size_bot/2],
-        #         [self.position[0] + size_bot/2, self.position[1] - size_bot/2],
-        #         [self.position[0] + size_bot/2, self.position[1] + size_bot/2],
-        #         [self.position[0] - size_bot/2, self.position[1] + size_bot/2]]
-
-        # leftWhell_points = [
-        #         [self.position[0] - size_bot/2 - wheel_width, self.position[1] - size_bot/2 + wheel_margin],
-        #         [self.position[0] - size_bot/2, self.position[1] - size_bot/2 + wheel_margin],
-        #         [self.position[0] - size_bot/2, self.position[1] + size_bot/2 - wheel_margin],
-        #         [self.position[0] - size_bot/2 - wheel_width, self.position[1] + size_bot/2 - wheel_margin]]
-
-        # rightWhell_points = [
-        #         [self.position[0] + size_bot/2 + wheel_width, self.position[1] - size_bot/2 + wheel_margin],
-        #         [self.position[0] + size_bot/2, self.position[1] - size_bot/2 + wheel_margin],
-        #         [self.position[0] + size_bot/2, self.position[1] + size_bot/2 - wheel_margin],
-        #         [self.position[0] + size_bot/2 + wheel_width, self.position[1] + size_bot/2 - wheel_margin]]
-
-        # self.sensor_point = [self.position[0] + sensor_offset[0], self.position[1] + sensor_offset[1]]
-
-
-                # Translation
+        # Translation
         main_points = [
                 [self.position[0] - size_bot/2, self.position[1] - size_bot/2],
                 [self.position[0] + size_bot/2, self.position[1] - size_bot/2],
@@ -121,7 +96,7 @@ class Robot():
                 [self.position[0] - size_bot/2 + wheel_margin, self.position[1] + size_bot/2 + wheel_width]]
 
         self.sensor_left_point = [self.position[0] + sensor_offset[0], self.position[1] - sensor_offset[1]]
-        self.sensor_right_point = [self.position[0] + sensor_offset[0], self.position[1] + sensor_offset[1]]
+        self.sensor_right_point = [self.position[0] + sensor_offset[0], self.position[1] + sensor_offset[1] * 2]
 
 
         # Rotation

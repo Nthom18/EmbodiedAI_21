@@ -2,22 +2,23 @@
 
 #### IMPORTS ####
 import numpy as np
-# import ev3dev.ev3 as ev3
 
-#### CONSTANTS ####
+import constants
+
+#### IMPORT CONSTANTS ####
 # Sensors
-REF_VALUE = 200
+REF_VALUE = constants.REF_VALUE
 COMP_THRESHOLD = 10
 BLACK = 1
 WHITE = 0
 
 # Motors
-BASE_SPEED = 50
+BASE_SPEED = constants.BASE_SPEED
 
 # Robot Measurements
-scale = 100 / 200
-ROBOT_R = 100 - (50 * scale) / 2
-ROBOT_L = 100 + 30 * scale
+scale = constants.scale
+ROBOT_R = constants.R
+ROBOT_L = constants.L
 
 
 integral = 0
@@ -28,9 +29,6 @@ class Behaviour:
     def __init__(self):
 
         self.state = 'init'
-        
-        # self.motor_left = mA
-        # self.motor_right = mB
 
         self.thrust_left = 0
         self.thrust_right = 0
