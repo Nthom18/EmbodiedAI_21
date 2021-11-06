@@ -22,7 +22,8 @@ class Robot():
         self.position = start_pos
         self.angle = math.radians(-90)
 
-        self.sensor_light = 0
+        self.sensor_light_left = 0
+        self.sensor_light_right = 0
 
 
     def update(self, control_left, control_right):
@@ -35,8 +36,11 @@ class Robot():
         self.robot_structure()
 
 
-        sensor_reading = self.track.get(int(self.sensor_pos[0]), int(self.sensor_pos[1]))
-        self.sensor_light = sum(sensor_reading) / 3
+        sensor_reading_left = self.track.get(int(self.sensor_pos_left[0]), int(self.sensor_pos_left[1]))
+        self.sensor_light_left = sum(sensor_reading_left) / 3
+
+        sensor_reading_right = self.track.get(int(self.sensor_pos_right[0]), int(self.sensor_pos_right[1]))
+        self.sensor_light_right = sum(sensor_reading_right) / 3
 
 
     def diff_drive(self, ul_pwm, ur_pwm):
@@ -64,14 +68,15 @@ class Robot():
             self.canvas.delete(self.robot_main_visual)
             self.canvas.delete(self.wheel_left_visual)
             self.canvas.delete(self.wheel_right_visual)
-            self.canvas.delete(self.sensor_visual)
+            self.canvas.delete(self.sensor_left_visual)
+            self.canvas.delete(self.sensor_right_visual)
 
 
         scale = self.size / 200
         size_bot = 200 * scale
         wheel_width = 30 * scale
         wheel_margin = 50 * scale
-        sensor_offset = [self.size/2 + 10, -0.1*self.size, ]
+        sensor_offset = [self.size/2 + 10, 0.1*self.size, ]
 
 
         # # Translation
@@ -115,7 +120,8 @@ class Robot():
                 [self.position[0] + size_bot/2 - wheel_margin, self.position[1] + size_bot/2 + wheel_width],
                 [self.position[0] - size_bot/2 + wheel_margin, self.position[1] + size_bot/2 + wheel_width]]
 
-        self.sensor_point = [self.position[0] + sensor_offset[0], self.position[1] + sensor_offset[1]]
+        self.sensor_left_point = [self.position[0] + sensor_offset[0], self.position[1] - sensor_offset[1]]
+        self.sensor_right_point = [self.position[0] + sensor_offset[0], self.position[1] + sensor_offset[1]]
 
 
         # Rotation
@@ -123,7 +129,8 @@ class Robot():
         self.wheel_left_visual = self.rotate_polygon(leftWhell_points, self.angle, self.position, 'brown4')
         self.wheel_right_visual = self.rotate_polygon(rightWhell_points, self.angle, self.position, 'brown4')
         
-        self.sensor_pos, self.sensor_visual = self.rotate_point(self.sensor_point, self.angle, 'SpringGreen2')
+        self.sensor_pos_left, self.sensor_left_visual = self.rotate_point(self.sensor_left_point, self.angle, 'SpringGreen2')
+        self.sensor_pos_right, self.sensor_right_visual = self.rotate_point(self.sensor_right_point, self.angle, 'SpringGreen4')
 
 
     def rotate_polygon(self, points, angle, centre, colour):

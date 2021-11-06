@@ -91,9 +91,7 @@ def main():
     while True:
 
         bot.update(control.thrust_left, control.thrust_right)
-        # print(control.thrust_left, control.thrust_right)
-        control.update(bot.sensor_light, 0)
-        # print(bot.sensor_light)
+        control.update(bot.sensor_light_left, 0)
 
 
         # Update GUI
