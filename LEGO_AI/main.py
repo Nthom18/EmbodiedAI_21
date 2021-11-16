@@ -30,7 +30,7 @@ Egon = Behaviour()
 while True:
 
     # Apply behaviours
-    Egon.update(cl1, cl2)
+    Egon.update(cl1.value(), cl2.value())
 
     mA.duty_cycle_sp = Egon.thrust_left
     mB.duty_cycle_sp = Egon.thrust_right
