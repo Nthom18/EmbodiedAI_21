@@ -2,15 +2,18 @@
 
 #### IMPORTS ####
 import ev3dev.ev3 as ev3
+from ev3dev2.sound import Sound
 import time
 
 from behaviour import Behaviour
-from line_follower import line_follower
 from logger import Logger
 
 
 
 #### SETUP ####
+# Speaker setup
+speaker = Sound()
+
 # Button on Brick setup
 btn = ev3.Button()
 
@@ -55,41 +58,28 @@ thrs_up = 70
 log = Logger()
 t = 0
 
+
 #### PROGRAM LOOP ####
 while True:
 
-    dis = us.value()
-    # print(str(dis))
+    log.log_to_file(t, cl1.value(), cl2.value(), Egon.control_input)
+    t += 1
 
-
-    if ((dis < thrs_low) and (hugged == False)):
-        ev3.Sound.beep().wait()
+    # Claw control
+    if ((us.value() < thrs_low) and (hugged == False)):
+        mA.duty_cycle_sp = 0
+        mD.duty_cycle_sp = 0
+        speaker.speak('Target acquired')
         claw('close')
         hugged = True
 
-    elif ((dis > thrs_up) and (hugged == True)):
+    elif (( us.value() > thrs_up) and (hugged == True)):
         claw('open')
         hugged = False
 
 
-    log.log_to_file(t, cl1.value(), cl2.value())
-    t += 1
-    print(cl1.value(), cl2.value())
-
     # Apply behaviours
-    # Egon.update(cl1.value(), cl2.value())
+    Egon.update(cl1.value(), cl2.value())
 
-    # mA.duty_cycle_sp = Egon.thrust_left
-    # mD.duty_cycle_sp = Egon.thrust_right
-
-
-    # TESTING
-
-    # mA.duty_cycle_sp = 40
-    # mD.duty_cycle_sp = 40
-    # mC.duty_cycle_sp = 50
-
-
-    
-
-    line_follower(mA, mD, cl1.value())     # First line follower
+    mA.duty_cycle_sp = Egon.thrust_left
+    mD.duty_cycle_sp = Egon.thrust_right

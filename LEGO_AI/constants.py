@@ -1,10 +1,9 @@
 
-
 # Sensors
 REF_VALUE = 35
 
 # Motors
-BASE_SPEED = 25
+BASE_SPEED = 75
 
 # Robot Sim Measurements
 R = 55.72 / 2

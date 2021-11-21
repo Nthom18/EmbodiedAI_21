@@ -37,10 +37,10 @@ class Behaviour:
         self.integral = 0
         self.last_error = 0
 
+        self.control_input = 0
+
 
     def update(self, cl_control, cl_check):   # State Machine
-
-        # print(self.state)
         
         control_state = BLACK if cl_control < REF_VALUE + 1 else WHITE
         check_state = BLACK if cl_check < REF_VALUE + 1 else WHITE
@@ -48,24 +48,27 @@ class Behaviour:
 
         # STATE CHANGING
         if (self.state == 'init'):
-            if (control_state == BLACK or check_state == BLACK):
-                self.state = 'solid line'
-            else:
-                self.state = 'ghost line'
+            self.state = 'solid line'
+            # if (control_state == BLACK or check_state == BLACK):
+            #     self.state = 'solid line'
+            # else:
+            #     self.state = 'ghost line'
 
 
         elif (self.state == 'solid line'):
-            if (control_state == WHITE and check_state == WHITE):
-                self.state = 'ghost line'
-            else:
-                self.state = 'solid line'
+            self.state = 'solid line'
+
+            # if (control_state == WHITE and check_state == WHITE):
+            #     self.state = 'ghost line'
+            # else:
+            #     self.state = 'solid line'
 
 
-        elif (self.state == 'ghost line'):
-            if (control_state == BLACK or check_state == BLACK):
-                self.state = 'solid line'
-            else:
-                self.state = 'ghost line'
+        # elif (self.state == 'ghost line'):
+        #     if (control_state == BLACK or check_state == BLACK):
+        #         self.state = 'solid line'
+        #     else:
+        #         self.state = 'ghost line'
 
 
         else:      
@@ -79,12 +82,12 @@ class Behaviour:
 
         elif (self.state == 'solid line'):
             self.line_follow(cl_control)
-            print("SOLID LINE")
+            # print("SOLID LINE")
 
 
         elif (self.state == 'ghost line'):
             self.leap_of_faith()
-            print("GHOST LINE")
+            # print("GHOST LINE")
 
 
         else:      
@@ -93,7 +96,10 @@ class Behaviour:
 
     def diff_drive(self, angle_velocity):
         diff = angle_velocity * ROBOT_L/ROBOT_R
-        
+
+        print(diff)
+
+
         left = BASE_SPEED - diff / 2
         right = BASE_SPEED + diff / 2
 
@@ -115,21 +121,24 @@ class Behaviour:
         self.thrust_left = left
         self.thrust_right = right
 
-        print(left, right)
-
 
     def line_follow(self, light_value):
+        # Good- P:0.1
 
-        Kp, Ki, Kd = (1, 0.5, 0.5)
+        Kp, Ki, Kd = (1, 0.5, 0)
 
         error = REF_VALUE - light_value
-        self.integral += error
+
+        max_int = 100
+        if (self.integral > max_int):
+            self.integral += error
+        
         derivative = error - self.last_error
         self.last_error = error
 
-        control_input = error * Kp + self.integral * Ki + derivative * Kd
+        self.control_input = error * Kp + self.integral * Ki + derivative * Kd
 
-        self.diff_drive(control_input)
+        self.diff_drive(self.control_input)
 
 
     def leap_of_faith(self):
