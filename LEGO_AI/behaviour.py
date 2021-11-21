@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
 #### IMPORTS ####
-import numpy as np
+# import numpy as np
 
 import constants
+
 
 #### IMPORT CONSTANTS ####
 # Sensors
@@ -98,9 +99,18 @@ class Behaviour:
 
         # PWM is percent -> max 100
         if (abs(left) > 100):
-            left = np.sign(left) * 100
+            # left = np.sign(left) * 100    // No Numpy ;(
+            if (left < 0):
+                left = -1 * 100
+            else:
+                left = 100
+
         if (abs(right) > 100):
-            right = np.sign(right) * 100
+            # right = np.sign(right) * 100  // No Numpy ;(
+            if (right < 0):
+                right = -1 * 100
+            else:
+                right = 100
 
         self.thrust_left = left
         self.thrust_right = right
