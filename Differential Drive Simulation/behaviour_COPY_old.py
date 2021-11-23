@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 
 #### IMPORTS ####
-# import numpy as np
+import numpy as np
 
 import constants
-from math import sqrt
-
 
 #### IMPORT CONSTANTS ####
 # Sensors
@@ -18,6 +16,7 @@ WHITE = 0
 BASE_SPEED = constants.BASE_SPEED
 
 # Robot Measurements
+scale = constants.scale
 ROBOT_R = constants.R
 ROBOT_L = constants.L
 
@@ -38,11 +37,10 @@ class Behaviour:
         self.integral = 0
         self.last_error = 0
 
-        self.control_input = 0
-        self.base_speed = 0
-
 
     def update(self, cl_control, cl_check):   # State Machine
+
+        # print(self.state)
         
         control_state = BLACK if cl_control < REF_VALUE + 1 else WHITE
         check_state = BLACK if cl_check < REF_VALUE + 1 else WHITE
@@ -50,27 +48,24 @@ class Behaviour:
 
         # STATE CHANGING
         if (self.state == 'init'):
-            self.state = 'solid line'
-            # if (control_state == BLACK or check_state == BLACK):
-            #     self.state = 'solid line'
-            # else:
-            #     self.state = 'ghost line'
+            if (control_state == BLACK or check_state == BLACK):
+                self.state = 'solid line'
+            else:
+                self.state = 'ghost line'
 
 
         elif (self.state == 'solid line'):
-            self.state = 'solid line'
-
-            # if (control_state == WHITE and check_state == WHITE):
-            #     self.state = 'ghost line'
-            # else:
-            #     self.state = 'solid line'
+            if (control_state == WHITE and check_state == WHITE):
+                self.state = 'ghost line'
+            else:
+                self.state = 'solid line'
 
 
-        # elif (self.state == 'ghost line'):
-        #     if (control_state == BLACK or check_state == BLACK):
-        #         self.state = 'solid line'
-        #     else:
-        #         self.state = 'ghost line'
+        elif (self.state == 'ghost line'):
+            if (control_state == BLACK or check_state == BLACK):
+                self.state = 'solid line'
+            else:
+                self.state = 'ghost line'
 
 
         else:      
@@ -98,53 +93,34 @@ class Behaviour:
 
     def diff_drive(self, angle_velocity):
         diff = angle_velocity * ROBOT_L/ROBOT_R
-
-        # if (abs(angle_velocity) < 40):
-        #     self.base_speed = 8 * sqrt(-abs(angle_velocity) + 40) + 5
-        # else:
-        #     self.base_speed = 5
-        self.base_speed = 20
-
-        left = self.base_speed - diff / 2
-        right = self.base_speed + diff / 2
-
+        
+        left = BASE_SPEED - diff / 2
+        right = BASE_SPEED + diff / 2
 
         # PWM is percent -> max 100
         if (abs(left) > 100):
-            # left = np.sign(left) * 100    // No Numpy ;(
-            if (left < 0):
-                left = -1 * 100
-            else:
-                left = 100
-
+            left = np.sign(left) * 100
         if (abs(right) > 100):
-            # right = np.sign(right) * 100  // No Numpy ;(
-            if (right < 0):
-                right = -1 * 100
-            else:
-                right = 100
+            right = np.sign(right) * 100
 
         self.thrust_left = left
         self.thrust_right = right
 
+        # print(left, right)
+
 
     def line_follow(self, light_value):
-        # Good- P:0.1
 
-        Kp, Ki, Kd = (1, 0.05, 1)
+        Kp, Ki, Kd = (1, 0, 0.5)
 
         error = REF_VALUE - light_value
-
-        max_int = 100
-        if (self.integral > max_int):   # Anti-windup
-            self.integral += error
-        
+        self.integral += error
         derivative = error - self.last_error
         self.last_error = error
 
-        self.control_input = error * Kp + self.integral * Ki + derivative * Kd
+        control_input = error * Kp + self.integral * Ki + derivative * Kd
 
-        self.diff_drive(self.control_input)
+        self.diff_drive(control_input)
 
 
     def leap_of_faith(self):

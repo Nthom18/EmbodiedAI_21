@@ -97,39 +97,44 @@ class Behaviour:
 
 
     def diff_drive(self, angle_velocity):
-        diff = angle_velocity * ROBOT_L/ROBOT_R
+        diff = (angle_velocity * ROBOT_L/ROBOT_R) / 4   # Divide by 3 is to account for PWM 
 
-        if (abs(angle_velocity) < 40):
-            self.base_speed = 8 * sqrt(-abs(angle_velocity) + 40) + 5
+        sharp_turn_engage = 30
+        if (abs(angle_velocity) < sharp_turn_engage):
+            self.base_speed = 5 * sqrt(-abs(angle_velocity) + sharp_turn_engage)
         else:
-            self.base_speed = 5
+            self.base_speed = 2
 
-        left = self.base_speed - diff / 2
-        right = self.base_speed + diff / 2
+        if (angle_velocity > sharp_turn_engage):
+            if (angle_velocity > 0):
+                left = -50
+                right = self.base_speed + diff / 2
+            else:
+                left = self.base_speed - diff / 2
+                right = -50
+        else:
+                left = self.base_speed - diff / 2
+                right = self.base_speed + diff / 2
+
 
         # PWM is percent -> max 100
-        if (abs(left) > 100):
-            # left = np.sign(left) * 100    // No Numpy ;(
-            if (left < 0):
-                left = -1 * 100
-            else:
-                left = 100
+        def actuate_pwm(pwm):
+            if (abs(pwm) > 100):
+                # pwm = np.sign(pwm) * 100    // No Numpy ;(
+                if (pwm < 0):
+                    pwm = -1 * 100
+                else:
+                    pwm = 100
+            return(pwm)
 
-        if (abs(right) > 100):
-            # right = np.sign(right) * 100  // No Numpy ;(
-            if (right < 0):
-                right = -1 * 100
-            else:
-                right = 100
-
-        self.thrust_left = left
-        self.thrust_right = right
+        self.thrust_left = actuate_pwm(left)
+        self.thrust_right = actuate_pwm(right)
 
 
     def line_follow(self, light_value):
         # Good- P:0.1
 
-        Kp, Ki, Kd = (1, 0.05, 1)
+        Kp, Ki, Kd = (0.8, 0.8, 0)
 
         error = REF_VALUE - light_value
 
@@ -169,15 +174,4 @@ class Behaviour:
 if __name__ == '__main__':
 
     Robot = Behaviour()
-
-    Robot.update(50, 40)
-    Robot.update(45, 36)
-    Robot.update(40, 30)
-    Robot.update(35, 25)
-    Robot.update(30, 20)
-    Robot.update(25, 15)
-    Robot.update(30, 20)
-    Robot.update(35, 25)
-    Robot.update(35, 25)
-    Robot.update(35, 25)
 

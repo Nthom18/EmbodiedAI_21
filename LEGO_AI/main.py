@@ -60,6 +60,7 @@ t = 0
 
 
 #### PROGRAM LOOP ####
+speaker.beep(1)
 while True:
 
     log.log_to_file(t, cl1.value(), cl2.value(), Egon.control_input, Egon.base_speed)
@@ -69,7 +70,7 @@ while True:
     if ((us.value() < thrs_low) and (hugged == False)):
         mA.duty_cycle_sp = 0
         mD.duty_cycle_sp = 0
-        speaker.speak('Target acquired')
+        # speaker.speak('Target acquired')
         claw('close')
         hugged = True
 
@@ -83,3 +84,4 @@ while True:
 
     mA.duty_cycle_sp = Egon.thrust_left
     mD.duty_cycle_sp = Egon.thrust_right
+
