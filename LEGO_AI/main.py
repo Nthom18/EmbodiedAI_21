@@ -62,7 +62,7 @@ t = 0
 #### PROGRAM LOOP ####
 while True:
 
-    log.log_to_file(t, cl1.value(), cl2.value(), Egon.control_input)
+    log.log_to_file(t, cl1.value(), cl2.value(), Egon.control_input, Egon.base_speed)
     t += 1
 
     # Claw control

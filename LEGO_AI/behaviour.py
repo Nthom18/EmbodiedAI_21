@@ -4,6 +4,7 @@
 # import numpy as np
 
 import constants
+from math import sqrt
 
 
 #### IMPORT CONSTANTS ####
@@ -38,6 +39,7 @@ class Behaviour:
         self.last_error = 0
 
         self.control_input = 0
+        self.base_speed = 0
 
 
     def update(self, cl_control, cl_check):   # State Machine
@@ -97,11 +99,13 @@ class Behaviour:
     def diff_drive(self, angle_velocity):
         diff = angle_velocity * ROBOT_L/ROBOT_R
 
-        print(diff)
+        if (abs(angle_velocity) < 40):
+            self.base_speed = 8 * sqrt(-abs(angle_velocity) + 40) + 5
+        else:
+            self.base_speed = 5
 
-
-        left = BASE_SPEED - diff / 2
-        right = BASE_SPEED + diff / 2
+        left = self.base_speed - diff / 2
+        right = self.base_speed + diff / 2
 
         # PWM is percent -> max 100
         if (abs(left) > 100):
@@ -125,12 +129,12 @@ class Behaviour:
     def line_follow(self, light_value):
         # Good- P:0.1
 
-        Kp, Ki, Kd = (1, 0.5, 0)
+        Kp, Ki, Kd = (1, 0.05, 1)
 
         error = REF_VALUE - light_value
 
         max_int = 100
-        if (self.integral > max_int):
+        if (self.integral > max_int):   # Anti-windup
             self.integral += error
         
         derivative = error - self.last_error
