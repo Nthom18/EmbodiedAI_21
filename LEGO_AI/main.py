@@ -64,6 +64,7 @@ speaker.beep(1)
 while True:
 
     log.log_to_file(t, cl1.value(), cl2.value(), Egon.control_input, Egon.base_speed)
+    # log.log_to_file(t, Egon.thrust_left, Egon.thrust_right, Egon.error, Egon.control_input, Egon.base_speed)
     t += 1
 
     # Claw control

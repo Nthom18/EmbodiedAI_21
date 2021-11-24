@@ -40,7 +40,6 @@ class Behaviour:
 
         self.control_input = 0
         self.base_speed = 0
-        self.error = 0
 
 
     def update(self, cl_control, cl_check):   # State Machine
@@ -97,15 +96,25 @@ class Behaviour:
             pass
 
 
-    def diff_drive(self, control):
-        diff = (control * ROBOT_L/ROBOT_R) / 4   # Divide by 4 is to account for PWM 
+    def diff_drive(self, angle_velocity):
+        diff = (angle_velocity * ROBOT_L/ROBOT_R) / 4   # Divide by 4 is to account for PWM 
 
-        self.base_speed = -control * 2.1 + 30
-        if self.base_speed < 0: self.base_speed = 0
+        sharp_turn_engage = 20
+        if (abs(angle_velocity) < sharp_turn_engage):
+            self.base_speed = 5 * sqrt(-abs(angle_velocity) + sharp_turn_engage) + 2
+        else:
+            self.base_speed = 2
 
-
-        left = 30 - diff
-        right = 30 + diff
+        if (angle_velocity > sharp_turn_engage):
+            if (angle_velocity > 0):
+                right = self.base_speed + diff / 2
+                left = -right
+            else:
+                left = self.base_speed - diff / 2
+                right = -left
+        else:
+                left = self.base_speed - diff / 2
+                right = self.base_speed + diff / 2
 
 
         # PWM is percent -> max 100
@@ -123,21 +132,20 @@ class Behaviour:
 
 
     def line_follow(self, light_value):
+        # Good- P:0.1
 
-        Kp, Ki, Kd = (0.8, 1, 0)
+        Kp, Ki, Kd = (0.8, 0.8, 0)
 
-        self.error = REF_VALUE - light_value
-        if abs(self.error) < 5: self.error = 0  # Error margin
-
+        error = REF_VALUE - light_value
 
         max_int = 100
         if (self.integral > max_int):   # Anti-windup
-            self.integral += self.error
+            self.integral += error
         
-        derivative = self.error - self.last_error
-        self.last_error = self.error
+        derivative = error - self.last_error
+        self.last_error = error
 
-        self.control_input = self.error * Kp + self.integral * Ki + derivative * Kd
+        self.control_input = error * Kp + self.integral * Ki + derivative * Kd
 
         self.diff_drive(self.control_input)
 

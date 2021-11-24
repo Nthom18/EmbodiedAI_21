@@ -1,6 +1,6 @@
 
 # Sensors
-REF_VALUE = 35
+REF_VALUE = 40
 
 # Motors
 BASE_SPEED = 75
