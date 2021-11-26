@@ -102,7 +102,7 @@ class Behaviour:
                     self.state = 'ghost line'
                     
             elif(hugged == True and self.hug_flag == False):
-                hug_flag = True
+                self.hug_flag = True
                 self.state = 'retrieve can'
 
             else:
@@ -114,7 +114,7 @@ class Behaviour:
                 self.state = 'solid line'
                 
             elif(hugged == True and self.hug_flag == False):
-                hug_flag = True
+                self.hug_flag = True
                 self.state = 'retrieve can'
                 
             else:
@@ -126,7 +126,7 @@ class Behaviour:
                 self.state = 'solid line'
                 
             elif(hugged == True and self.hug_flag == False):
-                hug_flag = True
+                self.hug_flag = True
                 self.state = 'retrieve can'
                 
             else:
