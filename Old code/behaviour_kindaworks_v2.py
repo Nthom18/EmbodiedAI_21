@@ -19,8 +19,7 @@ COMP_THRESHOLD = 10
 BLACK = 1
 WHITE = 0
 GRAY = 2
-TIME_OUT = 14
-# TIME_OUT = 11
+TIME_OUT = 11
 
 # Motors
 BASE_SPEED = constants.BASE_SPEED
@@ -51,11 +50,9 @@ class Behaviour:
         self.error = 0
 
         self.last_seen = [999, 999]
-        
-        self.hug_flag = False
 
 
-    def update(self, cl_left, cl_right, hugged):   # State Machine
+    def update(self, cl_left, cl_right):   # State Machine
         sharp_direction = 'null'
         
         # control_left = BLACK if cl_left < REF_BLACK + 1 else WHITE
@@ -98,13 +95,6 @@ class Behaviour:
                     self.state = 'sharp corner'
                     sharp_direction = 'left' if self.last_seen[0] < self.last_seen[1] else 'right'
 
-                else:
-                    self.state = 'ghost line'
-                    
-            elif(hugged == True and self.hug_flag == False):
-                hug_flag = True
-                self.state = 'retrieve can'
-
             else:
                 self.state = 'solid line'
                 
@@ -112,33 +102,16 @@ class Behaviour:
         elif (self.state == 'sharp corner'):
             if (control_left == GRAY and control_right == GRAY):
                 self.state = 'solid line'
-                
-            elif(hugged == True and self.hug_flag == False):
-                hug_flag = True
-                self.state = 'retrieve can'
-                
             else:
                 self.state = 'sharp corner'
 
 
         elif (self.state == 'ghost line'):
-            if (control_left != WHITE or control_right != WHITE):
+            if (control_left == BLACK or control_right == BLACK):
                 self.state = 'solid line'
-                
-            elif(hugged == True and self.hug_flag == False):
-                hug_flag = True
-                self.state = 'retrieve can'
-                
             else:
                 self.state = 'ghost line'
-                
-                
-        elif (self.state == 'retrieve can'):
-            if(control_left == BLACK):  # Turning counter clockwise
-                self.state = 'sharp corner'
-            else:
-                self.state = 'retrieve can'
-  
+
 
         else:      
             self.state = 'init' # Default case
@@ -152,18 +125,22 @@ class Behaviour:
 
         elif (self.state == 'solid line'):
             self.line_follow(cl_left, cl_right)
+            # print("SOLID LINE")
             
+        elif (self.state == 'sharp corner'):
+            turn_speed = 30
             
-        elif (self.state == 'sharp corner'):            
-            self.sharp_turn(sharp_direction)
+            if (sharp_direction == 'left'):
+                self.thrust_left = -turn_speed
+                self.thrust_right = turn_speed
+            elif (sharp_direction == 'right'):
+                self.thrust_left = turn_speed
+                self.thrust_right = -turn_speed
 
 
         elif (self.state == 'ghost line'):
             self.leap_of_faith()
-            
-        
-        elif (self.state == 'retrieve can'):
-            self.sharp_turn('left')
+            # print("GHOST LINE")
 
 
         else:      
@@ -173,13 +150,14 @@ class Behaviour:
     def diff_drive(self, control):
         diff = (control * ROBOT_L/ROBOT_R) / 4   # Divide by 4 is to account for PWM 
 
-        # self.base_speed = -control + 40
-        # if self.base_speed < 0: self.base_speed = 0
-        
-        self.base_speed = 30
+        self.base_speed = -control + 40
+        if self.base_speed < 0: self.base_speed = 0
 
-        left = self.base_speed + diff
-        right = self.base_speed - diff
+
+        # left = self.base_speed + diff
+        # right = self.base_speed - diff
+        left = 30 + diff
+        right = 30 - diff
 
 
         # PWM is percent -> max 100
@@ -198,7 +176,7 @@ class Behaviour:
 
     def line_follow(self, light_left, light_right):
 
-        Kp, Ki, Kd = (0.3, 0, 0)
+        Kp, Ki, Kd = (0.4, 0.5, 0)
 
         # self.error = REF_VALUE - light_value
         # if abs(self.error) < 5: self.error = 0  # Error margin
@@ -218,19 +196,9 @@ class Behaviour:
         self.diff_drive(self.control_input)
 
 
-    def sharp_turn(self, sharp_direction):
-        if (sharp_direction == 'left'):
-            self.thrust_left = -BASE_SPEED
-            self.thrust_right = BASE_SPEED
-        elif (sharp_direction == 'right'):
-            self.thrust_left = BASE_SPEED
-            self.thrust_right = -BASE_SPEED
-
-
     def leap_of_faith(self):
-        self.thrust_left    = BASE_SPEED + 4    # Left wheel too slow
+        self.thrust_left    = BASE_SPEED
         self.thrust_right   = BASE_SPEED
-        
 
 
 

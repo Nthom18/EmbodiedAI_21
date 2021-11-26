@@ -20,7 +20,8 @@ class Logger():
         log = open(file_name, 'w+', newline='')  # w+ mode truncates (clears) the file (new file for every test)   
         self.logger = csv.writer(log, dialect = 'excel')
 
-        self.logger.writerow(['Time', 'Light_sensor_1', 'Light_sensor_2', 'control_input', 'base_speed'])
+        self.logger.writerow(['Time', 'Light_sensor_1', 'Light_sensor_2', 'last_seen'])
+        # self.logger.writerow(['Time', 'Light_sensor_1', 'Light_sensor_2', 'control_input', 'base_speed'])
         # self.logger.writerow(['Time', 'left', 'right', 'error', 'control_input', 'base_speed'])
 
 

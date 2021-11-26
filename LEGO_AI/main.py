@@ -4,6 +4,7 @@
 import ev3dev.ev3 as ev3
 from ev3dev2.sound import Sound
 import time
+import sys
 
 from behaviour import Behaviour
 from logger import Logger
@@ -62,27 +63,38 @@ t = 0
 #### PROGRAM LOOP ####
 speaker.beep(1)
 while True:
+    
+    try:
+        log.log_to_file(t, cl1.value(), cl2.value(), Egon.last_seen)
+        # log.log_to_file(t, cl1.value(), cl2.value(), Egon.control_input, Egon.base_speed)
+        # log.log_to_file(t, Egon.thrust_left, Egon.thrust_right, Egon.error, Egon.control_input, Egon.base_speed)
+        t += 1
 
-    log.log_to_file(t, cl1.value(), cl2.value(), Egon.control_input, Egon.base_speed)
-    # log.log_to_file(t, Egon.thrust_left, Egon.thrust_right, Egon.error, Egon.control_input, Egon.base_speed)
-    t += 1
+        # Claw control
+        if ((us.value() < thrs_low) and (hugged == False)):
+            mA.duty_cycle_sp = 0
+            mD.duty_cycle_sp = 0
+            # speaker.speak('Target acquired')
+            claw('close')
+            hugged = True
 
-    # Claw control
-    if ((us.value() < thrs_low) and (hugged == False)):
+        # elif (( us.value() > thrs_up) and (hugged == True)):
+        #     claw('open')
+        #     hugged = False
+
+
+        # Apply behaviours
+        Egon.update(cl1.value(), cl2.value(), hugged)
+
+        mA.duty_cycle_sp = - Egon.thrust_left
+        mD.duty_cycle_sp = - Egon.thrust_right
+        
+        print(t, cl1.value(), cl2.value(), Egon.last_seen)
+ 
+
+    except KeyboardInterrupt: # CATCHES CTRL+C
         mA.duty_cycle_sp = 0
         mD.duty_cycle_sp = 0
-        # speaker.speak('Target acquired')
-        claw('close')
-        hugged = True
-
-    elif (( us.value() > thrs_up) and (hugged == True)):
-        claw('open')
-        hugged = False
-
-
-    # Apply behaviours
-    Egon.update(cl1.value(), cl2.value())
-
-    mA.duty_cycle_sp = Egon.thrust_left
-    mD.duty_cycle_sp = Egon.thrust_right
-
+        sys.exit()
+        
+    

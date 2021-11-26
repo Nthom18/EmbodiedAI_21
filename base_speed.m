@@ -1,5 +1,5 @@
 % fplot(@(x) 8*sqrt(-abs(x)+20) +2)
-fplot(@(x) -x*2.1 + 30)
+fplot(@(x) -x*0.8 + 40)
 xlim([0 50])
 ylim([0 100])
 
