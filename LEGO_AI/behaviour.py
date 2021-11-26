@@ -84,7 +84,7 @@ class Behaviour:
 
 
         elif (self.state == 'solid line'):
-            self.line_follow(cl_control)
+            self.line_follow(cl_control, cl_check)
             # print("SOLID LINE")
 
 
@@ -122,12 +122,14 @@ class Behaviour:
         self.thrust_right = actuate_pwm(right)
 
 
-    def line_follow(self, light_value):
+    def line_follow(self, light_1, light_2):
 
-        Kp, Ki, Kd = (0.8, 1, 0)
+        Kp, Ki, Kd = (0.5, 0, 0)
 
-        self.error = REF_VALUE - light_value
-        if abs(self.error) < 5: self.error = 0  # Error margin
+        # self.error = REF_VALUE - light_value
+        # if abs(self.error) < 5: self.error = 0  # Error margin
+
+        self.error = light_2 - light_1
 
 
         max_int = 100
