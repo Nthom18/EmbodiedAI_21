@@ -25,7 +25,7 @@ cl2 = ev3.ColorSensor('in2')
 cl2.mode = 'COL-REFLECT'
 
 # Sonic sensor setup
-us = ev3.UltrasonicSensor('in3')
+us = ev3.UltrasonicSensor('in4')
 # us.mode = 'US-DIST-CM'
 
 # Motor Setup
@@ -86,8 +86,8 @@ while True:
         # Apply behaviours
         Egon.update(cl1.value(), cl2.value(), hugged)
 
-        mA.duty_cycle_sp = - Egon.thrust_left
-        mD.duty_cycle_sp = - Egon.thrust_right
+        mA.duty_cycle_sp = Egon.thrust_left
+        mD.duty_cycle_sp = Egon.thrust_right
         
         print(t, cl1.value(), cl2.value(), Egon.last_seen)
  

@@ -176,7 +176,7 @@ class Behaviour:
         # self.base_speed = -control + 40
         # if self.base_speed < 0: self.base_speed = 0
         
-        self.base_speed = 30
+        self.base_speed = 50#30
 
         left = self.base_speed + diff
         right = self.base_speed - diff

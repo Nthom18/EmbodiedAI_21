@@ -6,7 +6,7 @@ import ev3dev.ev3 as ev3
 
 #### CONSTANTS ####
 REF_VALUE = 35
-BASE_SPEED = 50
+BASE_SPEED = 30
 
 
 #### FUNCTIONS ####
