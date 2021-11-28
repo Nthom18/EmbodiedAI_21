@@ -29,10 +29,10 @@ us = ev3.UltrasonicSensor('in4')
 # us.mode = 'US-DIST-CM'
 
 # Motor Setup
-mA = ev3.LargeMotor('outA')
-mA.run_direct()
-mD = ev3.LargeMotor('outD')
-mD.run_direct()
+mR = ev3.LargeMotor('outD')
+mR.run_direct()
+mL = ev3.LargeMotor('outA')
+mL.run_direct()
 mC = ev3.MediumMotor('outC')
 mC.run_direct()
 
@@ -72,8 +72,8 @@ while True:
 
         # Claw control
         if ((us.value() < thrs_low) and (hugged == False)):
-            mA.duty_cycle_sp = 0
-            mD.duty_cycle_sp = 0
+            mR.duty_cycle_sp = 0
+            mL.duty_cycle_sp = 0
             # speaker.speak('Target acquired')
             claw('close')
             hugged = True
@@ -86,15 +86,13 @@ while True:
         # Apply behaviours
         Egon.update(cl1.value(), cl2.value(), hugged)
 
-        mA.duty_cycle_sp = Egon.thrust_left
-        mD.duty_cycle_sp = Egon.thrust_right
+        mR.duty_cycle_sp = Egon.thrust_right
+        mL.duty_cycle_sp = Egon.thrust_left
         
         print(t, cl1.value(), cl2.value(), Egon.last_seen)
  
 
     except KeyboardInterrupt: # CATCHES CTRL+C
-        mA.duty_cycle_sp = 0
-        mD.duty_cycle_sp = 0
+        mR.duty_cycle_sp = 0
+        mL.duty_cycle_sp = 0
         sys.exit()
-        
-    

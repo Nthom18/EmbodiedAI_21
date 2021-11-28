@@ -100,7 +100,7 @@ class Behaviour:
 
                 else:
                     self.state = 'ghost line'
-                    
+
             elif(hugged == True and self.hug_flag == False):
                 self.hug_flag = True
                 self.state = 'retrieve can'
@@ -110,7 +110,9 @@ class Behaviour:
                 
 
         elif (self.state == 'sharp corner'):
-            if (control_left == GRAY and control_right == GRAY):
+            cond1 = (control_left == GRAY and control_right == BLACK)
+            cond2 = (control_left == BLACK and control_right == GRAY)
+            if (cond1 or cond2):
                 self.state = 'solid line'
                 
             elif(hugged == True and self.hug_flag == False):
@@ -220,11 +222,11 @@ class Behaviour:
 
     def sharp_turn(self, sharp_direction):
         if (sharp_direction == 'left'):
-            self.thrust_left = -BASE_SPEED
+            self.thrust_left = - BASE_SPEED - 4
             self.thrust_right = BASE_SPEED
         elif (sharp_direction == 'right'):
-            self.thrust_left = BASE_SPEED
-            self.thrust_right = -BASE_SPEED
+            self.thrust_left = BASE_SPEED + 4
+            self.thrust_right = - BASE_SPEED
 
 
     def leap_of_faith(self):
@@ -232,21 +234,6 @@ class Behaviour:
         self.thrust_right   = BASE_SPEED
         
 
-
-
-
-    # TODO - Find can
-        # Implement integrator wind-up
-        # Ghost line folowing 
-        # Keep track of last sensor to see black, to know if we're off track or the line has stopped.
-
-    # TODO - Get can
-        # Locate can
-        # Hug can
-
-    # TODO - Return can
-        # Turn around
-        # Same as find can with newly tuned PID
 
 
 if __name__ == '__main__':
