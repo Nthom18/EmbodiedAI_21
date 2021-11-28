@@ -100,7 +100,7 @@ class Behaviour:
 
                 else:
                     self.state = 'ghost line'
-                    
+
             elif(hugged == True and self.hug_flag == False):
                 self.hug_flag = True
                 self.state = 'retrieve can'
@@ -234,21 +234,6 @@ class Behaviour:
         self.thrust_right   = BASE_SPEED
         
 
-
-
-
-    # TODO - Find can
-        # Implement integrator wind-up
-        # Ghost line folowing 
-        # Keep track of last sensor to see black, to know if we're off track or the line has stopped.
-
-    # TODO - Get can
-        # Locate can
-        # Hug can
-
-    # TODO - Return can
-        # Turn around
-        # Same as find can with newly tuned PID
 
 
 if __name__ == '__main__':
