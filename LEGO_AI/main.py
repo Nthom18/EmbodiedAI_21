@@ -19,13 +19,13 @@ speaker = Sound()
 btn = ev3.Button()
 
 # Colour sensor setup
+clR = ev3.ColorSensor('in2')
 clL = ev3.ColorSensor('in1')
 clL.mode = 'COL-REFLECT'
-clR = ev3.ColorSensor('in2')
 clR.mode = 'COL-REFLECT'
 
 # Sonic sensor setup
-us = ev3.UltrasonicSensor('in4')
+us = ev3.UltrasonicSensor('in3')
 # us.mode = 'US-DIST-CM'
 
 # Motor Setup
