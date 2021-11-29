@@ -1,8 +1,8 @@
 
 # Sensors
-REF_BLACK = 6
+REF_BLACK = 10
 # REF_WHITE = 50
-REF_WHITE = 53
+REF_WHITE = 39#53
 
 # Motors
 BASE_SPEED = 30

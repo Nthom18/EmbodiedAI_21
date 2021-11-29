@@ -19,8 +19,8 @@ speaker = Sound()
 btn = ev3.Button()
 
 # Colour sensor setup
-clR = ev3.ColorSensor('in2')
-clL = ev3.ColorSensor('in1')
+clR = ev3.ColorSensor('in1')
+clL = ev3.ColorSensor('in2')
 clL.mode = 'COL-REFLECT'
 clR.mode = 'COL-REFLECT'
 
@@ -86,6 +86,8 @@ while True:
         # Apply behaviours
         Egon.update(clL.value(), clR.value(), hugged)
 
+        # mR.duty_cycle_sp = 50
+        # mL.duty_cycle_sp = 50
         mR.duty_cycle_sp = Egon.thrust_right
         mL.duty_cycle_sp = Egon.thrust_left
         
