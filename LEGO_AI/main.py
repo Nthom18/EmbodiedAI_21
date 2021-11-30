@@ -20,12 +20,12 @@ btn = ev3.Button()
 
 # Colour sensor setup
 clR = ev3.ColorSensor('in1')
-clL = ev3.ColorSensor('in2')
+clL = ev3.ColorSensor('in3')
 clL.mode = 'COL-REFLECT'
 clR.mode = 'COL-REFLECT'
 
 # Sonic sensor setup
-us = ev3.UltrasonicSensor('in3')
+us = ev3.UltrasonicSensor('in4')
 # us.mode = 'US-DIST-CM'
 
 # Motor Setup
@@ -47,12 +47,12 @@ def claw(dir):
     elif (dir == 'close'):
         mC.run_forever(speed_sp=-1000)
 
-    time.sleep(2)
+    time.sleep(3.1)
     mC.stop(stop_action="hold")
 
 
 hugged = False
-thrs_low = 40
+thrs_low = 42
 thrs_up = 70
 
 
@@ -88,6 +88,7 @@ while True:
 
         # mR.duty_cycle_sp = 50
         # mL.duty_cycle_sp = 50
+
         mR.duty_cycle_sp = Egon.thrust_right
         mL.duty_cycle_sp = Egon.thrust_left
         
@@ -97,4 +98,5 @@ while True:
     except KeyboardInterrupt: # CATCHES CTRL+C
         mR.duty_cycle_sp = 0
         mL.duty_cycle_sp = 0
+        mC.stop(stop_action="hold")
         sys.exit()

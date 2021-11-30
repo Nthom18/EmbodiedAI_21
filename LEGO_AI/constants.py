@@ -1,6 +1,6 @@
 
 # Sensors
-REF_BLACK = 10
+REF_BLACK = 8
 # REF_WHITE = 50
 REF_WHITE = 39#53
 

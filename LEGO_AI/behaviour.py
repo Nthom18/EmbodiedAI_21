@@ -19,7 +19,7 @@ COMP_THRESHOLD = 10
 BLACK = 1
 WHITE = 0
 GRAY = 2
-TIME_OUT = 9#10 #14
+TIME_OUT = 8#10 #14
 # TIME_OUT = 11
 
 # Motors
@@ -53,11 +53,13 @@ class Behaviour:
         self.last_seen = [999, 999]
         
         self.hug_flag = False
+        self.hugged = False
 
 
     def update(self, cl_left, cl_right, hugged):   # State Machine
         sharp_direction = 'null'
         
+        self.hugged = hugged
         # control_left = BLACK if cl_left < REF_BLACK + 1 else WHITE
 
         if (cl_left < REF_BLACK):
@@ -117,7 +119,7 @@ class Behaviour:
             if (cond1 or cond2):
                 self.state = 'solid line'
                 
-            elif(hugged == True and self.hug_flag == False):
+            elif(self.hugged == True and self.hug_flag == False):
                 self.hug_flag = True
                 self.state = 'retrieve can'
                 
@@ -129,7 +131,7 @@ class Behaviour:
             if (control_left != WHITE or control_right != WHITE):
                 self.state = 'solid line'
                 
-            elif(hugged == True and self.hug_flag == False):
+            elif(self.hugged == True and self.hug_flag == False):
                 self.hug_flag = True
                 self.state = 'retrieve can'
                 
@@ -185,7 +187,10 @@ class Behaviour:
         left = self.base_speed + diff
         right = self.base_speed - diff
 
-
+        if (self.hugged==True):
+            right = right*1.2
+            left = left*1.2
+        
         # PWM is percent -> max 100
         def actuate_pwm(pwm):
             if (abs(pwm) > 100):
@@ -202,7 +207,7 @@ class Behaviour:
 
     def line_follow(self, light_left, light_right):
 
-        Kp, Ki, Kd = (0.3, 0.1, 0)
+        Kp, Ki, Kd = (0.25, 0.1, 0)
 
         # self.error = REF_VALUE - light_value
         # if abs(self.error) < 5: self.error = 0  # Error margin
@@ -226,9 +231,19 @@ class Behaviour:
         if (sharp_direction == 'left'):
             self.thrust_left = - BASE_SPEED - 4
             self.thrust_right = BASE_SPEED
+            
+            if (self.hugged==True):
+                self.thrust_right = self.thrust_right*1.2
+                self.thrust_left =  self.thrust_left*1.2
+
         elif (sharp_direction == 'right'):
             self.thrust_left = BASE_SPEED + 4
             self.thrust_right = - BASE_SPEED
+
+            if (self.hugged==True):
+                self.thrust_right = self.thrust_right*1.2
+                self.thrust_left =  self.thrust_left*1.2
+
 
 
     def leap_of_faith(self):
