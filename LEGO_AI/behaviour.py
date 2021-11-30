@@ -19,7 +19,7 @@ COMP_THRESHOLD = 10
 BLACK = 1
 WHITE = 0
 GRAY = 2
-TIME_OUT = 14
+TIME_OUT = 9#10 #14
 # TIME_OUT = 11
 
 # Motors
@@ -96,7 +96,7 @@ class Behaviour:
             if (control_left == WHITE and control_right == WHITE):
                 if((self.last_seen[0] < TIME_OUT) or (self.last_seen[1] < TIME_OUT)):
                     self.state = 'sharp corner'
-                    sharp_direction = 'left' if self.last_seen[0] < self.last_seen[1] else 'right'
+                    sharp_direction = 'left' if self.last_seen[0] <= self.last_seen[1] else 'right'
 
                 else:
                     self.state = 'ghost line'
@@ -110,8 +110,10 @@ class Behaviour:
                 
 
         elif (self.state == 'sharp corner'):
-            cond1 = (control_left == GRAY and control_right == BLACK)
-            cond2 = (control_left == BLACK and control_right == GRAY)
+            #cond1 = (control_left == GRAY or control_right == BLACK) # or previously 'and'
+            #cond2 = (control_left == BLACK or control_right == GRAY)
+            cond1 = (control_right == BLACK) # or previously 'and'
+            cond2 = (control_left == BLACK)
             if (cond1 or cond2):
                 self.state = 'solid line'
                 
@@ -178,7 +180,7 @@ class Behaviour:
         # self.base_speed = -control + 40
         # if self.base_speed < 0: self.base_speed = 0
         
-        self.base_speed = 50#30
+        self.base_speed = 50 #50 #40 works #30 #70 for the ramp 
 
         left = self.base_speed + diff
         right = self.base_speed - diff
@@ -200,7 +202,7 @@ class Behaviour:
 
     def line_follow(self, light_left, light_right):
 
-        Kp, Ki, Kd = (0.3, 0, 0)
+        Kp, Ki, Kd = (0.3, 0.1, 0)
 
         # self.error = REF_VALUE - light_value
         # if abs(self.error) < 5: self.error = 0  # Error margin
